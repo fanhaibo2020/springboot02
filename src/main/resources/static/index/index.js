@@ -16,6 +16,7 @@ function createIndexTemplate() {
     templateObj.inner = {};
 
     templateObj.constant.logout = $("#logout");
+    templateObj.constant.aop = $("#aop");
     templateObj.url.logoutUrl = "/logout.do";
 
     // 退出登录按钮点击事件
@@ -29,7 +30,21 @@ function createIndexTemplate() {
                     window.location.href = "/login.html"; //请求页面的url
                 }
             }
+        })
+    }
 
+    /**
+     * 测试aop的功能
+     */
+    templateObj.operator.onAopClick = function(){
+        $.ajax({
+            type:'post',
+            url:"/aop/addUser.do",
+            dataType:'json',  //返回数据类型
+            data :{userName:"AAA"},
+            success:function (resultData) {
+               console.log("执行成功")
+            }
         })
     }
 
@@ -41,6 +56,7 @@ function createIndexTemplate() {
     //绑定点击事件
     templateObj.bind = function () {
         templateObj.constant.logout.bind("click",templateObj.operator.onLogoutClick);
+        templateObj.constant.aop.bind("click",templateObj.operator.onAopClick);
     }
 
     return templateObj;

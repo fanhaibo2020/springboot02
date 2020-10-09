@@ -1,0 +1,20 @@
+server:
+  port: 9000
+  servlet:
+    session:
+      timeout: 30m
+
+#是否激活 swagger true or false
+swagger:
+  enable: true
+
+#session生命周期
+
+spring:
+  datasource:
+    mysql:
+      jdbcUrl: jdbc:mysql://127.0.0.1:3306/testbank?characterEncoding=utf-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    maximum-pool-size: 15

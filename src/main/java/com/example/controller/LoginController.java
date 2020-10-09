@@ -3,6 +3,8 @@ package com.example.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -23,21 +25,21 @@ import java.util.Map;
 @Controller
 public class LoginController {
     //登录页请求
-    @RequestMapping("/login.html")
+    @GetMapping("/login.html")
     public String LoginHtml(){
         System.out.println("登录页请求");
         return "/login/login";
     }
 
     //首页请求
-    @RequestMapping({"/","/index.html"})
+    @GetMapping({"/","/index.html"})
     public String indexHtml(){
         System.out.println("首页请求");
         return "/index/index";
     }
 
     //退出登录请求
-    @RequestMapping("/logout.do")
+    @GetMapping("/logout.do")
     @ResponseBody
     public Map<String,Object> logout(HttpServletRequest request) throws Exception{
         System.out.println("logout.do");
@@ -55,7 +57,7 @@ public class LoginController {
      * @param password
      * @throws Exception
      */
-    @RequestMapping("/login.do")
+    @PostMapping("/login.do")
     @ResponseBody   //加了这个注解就不走视图解析器了，这个要特别注意
     public Map<String,Object> login(String userName, String password, HttpSession session) throws Exception{
         Map map = new HashMap();

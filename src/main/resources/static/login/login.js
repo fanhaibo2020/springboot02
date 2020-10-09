@@ -38,11 +38,16 @@ function createLoginTemplate() {
         var requestData = {}
         requestData.userName = loginUsername;
         requestData.password = loginPassword;
+        console.log("requestData120=",JSON.stringify(requestData));
         $.ajax({
-            type:'post',
+            type:'POST',
             url:templateObj.url.loginUrl,
-            dataType:'json',  //返回数据类型
-            data: requestData,  //发送到后端的数据  JSON.stringify(params)，传过去的是一个对象
+            // contentType: 'application/json; charset=utf-8',//设置发送给服务器的格式(不建议使用)
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }, //设置发送给服务器的格式,这个应该是默认的,之前不显示设置也是可以运行的,为什么后来就不行了？
+            dataType:'json',  //返回数据类型(收到服务器数据格式)
+            data: {userName:loginUsername,password:loginPassword},  //发送到后端的数据  JSON.stringify(params)，传过去的是一个对象
             success:function (resultData) {
                 if(resultData.flag ==true){
                     window.location.href = "/index.html";//请求页面的url

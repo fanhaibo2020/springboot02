@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class HelloController {
-    @RequestMapping("/hello.do")
+    @GetMapping("/hello.do")
     @ResponseBody  //该注解使方法不走视图解析器，页面上直接返回“hello world!”
     public String hello(){
         System.out.println("我是hello");
