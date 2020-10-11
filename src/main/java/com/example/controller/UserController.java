@@ -90,6 +90,24 @@ public class UserController {
         return userBO.selectByWrapper6();
     }
 
+    @GetMapping("selectByWrapper7.do")
+    @ApiOperation("条件构造器查询7")
+    public List<User> selectByWrapper7() throws Exception{
+        return userBO.selectByWrapper7();
+    }
+
+    @GetMapping("selectByWrapper8.do")
+    @ApiOperation("条件构造器查询8")
+    public List<User> selectByWrapper8() throws Exception{
+        return userBO.selectByWrapper8();
+    }
+
+    @GetMapping("selectByWrapper9.do")
+    @ApiOperation("条件构造器查询9")
+    public List<User> selectByWrapper9() throws Exception{
+        return userBO.selectByWrapper9();
+    }
+
     /** 插入用户数据**/
     @PostMapping("insertUser.do")
     @ApiOperation("insert用户数据")

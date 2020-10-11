@@ -136,6 +136,43 @@ public class UserBO {
         return userList;
     }
 
+    /**
+     * SQL：SELECT userId,userName,gender,age FROM user WHERE (userId IN (?,?,?))
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper7() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("userId",Arrays.asList(1,2,3));
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
+    /**
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE (userId IN (?,?,?,?)) limit 2
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper8() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("userId",Arrays.asList(1,2,3,4)).last("limit 2");
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
+    /**
+     * 选择指定的字段名，select没有指定的会设置为null！！！（这种实用性应该不大,但也要知道怎么用）
+     * SQL:SELECT userId,userName FROM user WHERE (userName LIKE ? AND age < ?)
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper9() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("userId","userName").like("userName","王").lt("age",40);
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
     /** 添加用户数据**/
     public int insertUser(User user) throws Exception{
       int row = userDao.insert(user);
