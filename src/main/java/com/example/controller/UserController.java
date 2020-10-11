@@ -31,7 +31,6 @@ public class UserController {
     @ApiOperation(value = "查询所有用户信息")
     public List<User> findAllUser() throws Exception{
         List<User> allUser = userBO.findAllUser();
-        System.out.println("allUser="+allUser);
         return allUser;
 
     }
@@ -71,6 +70,24 @@ public class UserController {
     @ApiOperation("条件构造器查询3")
     public List<User> conditionQuery3() throws Exception{
         return userBO.conditionQuery3();
+    }
+
+   @GetMapping("selectByWrapper4.do")
+   @ApiOperation("条件构造器查询4")
+   public List<User> selectByWrapper4() throws Exception{
+        return userBO.selectByWrapper4();
+   }
+
+    @GetMapping("selectByWrapper5.do")
+    @ApiOperation("条件构造器查询5")
+    public List<User> selectByWrapper5() throws Exception{
+        return userBO.selectByWrapper5();
+    }
+
+    @GetMapping("selectByWrapper6.do")
+    @ApiOperation("条件构造器查询6")
+    public List<User> selectByWrapper6() throws Exception{
+        return userBO.selectByWrapper6();
     }
 
     /** 插入用户数据**/

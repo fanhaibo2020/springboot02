@@ -59,6 +59,7 @@ public class UserBO {
 
     /**
      * 运用条件构造器进行查询1
+     * SQL语句：SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? AND gender = ?)
      * @return
      * @throws Exception
      */
@@ -72,24 +73,65 @@ public class UserBO {
     /**
      * 运用条件构造器进行查询2
      * @return
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? AND age BETWEEN ? AND ? AND city IS NOT NULL)
      * @throws Exception
      */
     public List<User> conditionQuery2() throws Exception{
         QueryWrapper<User> queryWrapper = new QueryWrapper<>(); //条件构造器
-        queryWrapper.like("userName","李").between("age",20,40).isNotNull("city"); //这里的key值对应的是数据库中的字段
+        queryWrapper.like("userName","王").between("age",20,40).isNotNull("city"); //这里的key值对应的是数据库中的字段
         List<User> userList = userDao.selectList(queryWrapper);
         return userList;
     }
 
     /**
      * 运用条件构造器进行查询3
+     * SQL：SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? OR age >= ?) ORDER BY age DESC,userId ASC
      * @return
      * @throws Exception
      */
     public List<User> conditionQuery3() throws Exception{
         QueryWrapper<User> queryWrapper = new QueryWrapper<>(); //条件构造器
-        queryWrapper.likeLeft("userName","李").or().ge("age",30).orderByDesc("age")
+        queryWrapper.likeLeft("userName","王").or().ge("age",30).orderByDesc("age")
         .orderByAsc("userId"); //这里的key值对应的是数据库中的字段
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
+    /**
+     * 运用条件构造器进行查询4
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? AND (age < ? OR city IS NOT NULL))
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper4() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userName","王").and(wq->wq.lt("age",40).or().isNotNull("city"));
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
+    /**
+     * 运用条件构造器进行查询5
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? AND (age < ? AND age > ? AND city IS NOT NULL))
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper5() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("userName","王").and(wq->wq.lt("age",40).gt("age",20).isNotNull("city"));
+        List<User> userList = userDao.selectList(queryWrapper);
+        return userList;
+    }
+
+    /**
+     * 运用条件构造器进行查询6
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE ((age < ? OR city IS NOT NULL) AND userName LIKE ?)
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapper6() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.nested(wq->wq.lt("age",40).or().isNotNull("city")).likeRight("userName","王");
         List<User> userList = userDao.selectList(queryWrapper);
         return userList;
     }
