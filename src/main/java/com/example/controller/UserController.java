@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.bo.UserBO;
 import com.example.entity.User;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName UserController
@@ -106,6 +108,42 @@ public class UserController {
     @ApiOperation("条件构造器查询9")
     public List<User> selectByWrapper9() throws Exception{
         return userBO.selectByWrapper9();
+    }
+
+    @GetMapping("selectByWrapperEntity.do")
+    @ApiOperation("条件构造器查询10")
+    public List<User> selectByWrapperEntity() throws Exception{
+        return userBO.selectByWrapperEntity();
+    }
+
+    @GetMapping("selectByWrapperAllEq.do")
+    @ApiOperation("条件构造器查询11")
+    public List<User> selectByWrapperAllEq() throws Exception{
+        return userBO.selectByWrapperAllEq();
+    }
+
+    @GetMapping("selectByWrapperMaps.do")
+    @ApiOperation("条件构造器查询12")
+    public List<Map<String,Object>> selectByWrapperMaps() throws Exception{
+        return userBO.selectByWrapperMaps();
+    }
+
+    @GetMapping("selectLambda1.do")
+    @ApiOperation("lambda表达式查询1")
+    public List<User> selectLambda1() throws Exception{
+        return userBO.selectLambda1();
+    }
+
+    @GetMapping("selectLambda2.do")
+    @ApiOperation("lambda表达式查询2")
+    public List<User> selectLambda2() throws Exception{
+        return userBO.selectLambda2();
+    }
+
+    @GetMapping("selectPage.do")
+    @ApiOperation("分页查询")
+    public IPage<User> selectPage() throws Exception{
+        return userBO.selectPage();
     }
 
     /** 插入用户数据**/

@@ -1,11 +1,15 @@
 package com.example.bo;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.entity.User;
 import com.example.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -171,6 +175,86 @@ public class UserBO {
         queryWrapper.select("userId","userName").like("userName","王").lt("age",40);
         List<User> userList = userDao.selectList(queryWrapper);
         return userList;
+    }
+
+    /**
+     *SQL：SELECT userId,userName,gender,age FROM user WHERE userName=? AND age=?
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapperEntity() throws Exception{
+        User whereUser = new User();
+        whereUser.setUserName("小王");
+        whereUser.setAge("20");
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>(whereUser);
+        return userDao.selectList(queryWrapper);
+    }
+
+    /**
+     * SQL:SELECT userId,userName,gender,age FROM user WHERE (age = ?)
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectByWrapperAllEq() throws Exception{
+        Map<String,Object> params = new HashMap<>();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        params.put("userName","小王");
+        params.put("age","20");
+        //下方如果k的值(即下方的v值)不等于"小王","userName"的条件不会添加到sql语句中
+        queryWrapper.allEq((k,v)->!k.equals("小王"),params);
+        return userDao.selectList(queryWrapper);
+    }
+
+    /**
+     * SQL：SELECT userId,userName,age FROM user WHERE (userName LIKE ? AND age < ?)
+     * @return
+     * @throws Exception
+     */
+    public List<Map<String,Object>> selectByWrapperMaps() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("userId","userName","age").like("userName","王").lt("age",40);
+        return userDao.selectMaps(queryWrapper);
+    }
+
+    /**
+     *SQL:SELECT userId,userName,gender,age FROM user WHERE (userName LIKE ? AND age < ?)
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectLambda1() throws Exception{
+//        LambdaQueryWrapper<User> lambda = new QueryWrapper<User>().lambda();
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.like(User::getUserName,"王").lt(User::getAge,40);
+        return userDao.selectList(lambdaQueryWrapper);
+    }
+
+    /**
+     *SQL:SELECT userId,userName,gender,age,city FROM user WHERE (userName LIKE ? AND (age < ? OR city IS NOT NULL))
+     * @return
+     * @throws Exception
+     */
+    public List<User> selectLambda2() throws Exception{
+        LambdaQueryWrapper<User> lambda = new QueryWrapper<User>().lambda();
+        lambda.like(User::getUserName,"王").and(lam->lam.lt(User::getAge,40).or().isNotNull(User::getCity));
+        return userDao.selectList(lambda);
+    }
+
+
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    public IPage<User> selectPage() throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ge("age",10);
+        Page<User> page = new Page<User>(2,3); //当前页，以及每页的条数
+        IPage<User> iPage = userDao.selectPage(page,queryWrapper);
+        System.out.println("总页数="+iPage.getPages());
+        System.out.println("总记录数="+iPage.getTotal());
+        List<User> userList = iPage.getRecords();
+        System.out.println("userList="+userList);
+        return iPage;
     }
 
     /** 添加用户数据**/
