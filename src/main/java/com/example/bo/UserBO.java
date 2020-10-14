@@ -3,6 +3,8 @@ package com.example.bo;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.entity.User;
@@ -264,11 +266,101 @@ public class UserBO {
       return row;
     }
 
-    /** 根据id删除用户数据**/
+    /**
+     * 根据id删除用户数据
+     * SQL:
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public int deleteUserById(String id) throws Exception{
-       int row = userDao.deleteById(id);
+        int row = userDao.deleteById(id);
         System.out.println("删除数据影响行数="+row);
         return row;
+    }
+
+    /**
+     * deleteByMap删除用户数据
+     * SQL: DELETE FROM user WHERE userName = ? AND userId = ?
+     * @throws Exception
+     */
+    public void deleteByMap() throws Exception{
+       Map<String,Object> columnMap = new HashMap<>();
+       columnMap.put("userName","ss"); //必须是数据库中的字段,不然会报错的
+       columnMap.put("userId","1");
+       int rows = userDao.deleteByMap(columnMap);
+       System.out.println("删除数据影响行数="+rows);
+    }
+
+    /**
+     * SQL:DELETE FROM user WHERE userId IN ( ? , ? )
+     * @throws Exception
+     */
+    public void deleteBatchIds() throws Exception{
+      int rows =userDao.deleteBatchIds(Arrays.asList(9,10));
+        System.out.println("删除记录条数="+rows);
+    }
+
+    /**
+     * deleteByWrapper删除用户数据
+     * SQL: DELETE FROM user WHERE (userId = ?)
+     * @throws Exception
+     */
+    public void deleteByWrapper() throws Exception{
+        LambdaQueryWrapper<User> lambdaQuery = new LambdaQueryWrapper();
+        lambdaQuery.eq(User::getUserId,20);
+        int rows = userDao.delete(lambdaQuery);
+        System.out.println("删除条数="+rows);
+    }
+
+    /**
+     * 根据Id修改数据
+     * SQL: UPDATE user SET age=?, city=? WHERE userId=?
+     * @throws Exception
+     */
+    public void updateById() throws Exception{
+       User user = new User();
+       user.setUserId("1");
+       user.setAge("20");
+       user.setCity("武汉");
+       int rows = userDao.updateById(user); //updateById是baseMapper中的方法
+        System.out.println("影响记录数="+rows);
+    }
+
+    /**
+     * UPDATE user SET age=?, city=? WHERE (userName = ? AND age = ?)
+     * @throws Exception
+     */
+    public void updateByWrapper1() throws Exception{
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("userName","李四").eq("age",24);
+        User user = new User();
+        user.setAge("25");
+        user.setCity("cad");
+        int rows = userDao.update(user,updateWrapper); //update()是baseMapper中的方法
+        System.out.println("影响记录数="+rows);
+    }
+
+    /**
+     * SQL: UPDATE user SET city=? WHERE (userName = ? AND age = ?)
+     * @throws Exception
+     */
+    public void updateByWrapper2() throws Exception{
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("userName","李四").eq("age",24).set("city","CAM");
+        int rows = userDao.update(null,updateWrapper); //update()是baseMapper中的方法
+        System.out.println("影响记录数="+rows);
+    }
+
+    /**
+     * SQL: UPDATE user SET city=? WHERE (userName = ?)
+     * @throws Exception
+     */
+    public void updateByWrapperLambda() throws Exception{
+        LambdaUpdateWrapper<User> lambdaUpdate = new LambdaUpdateWrapper<>();
+        lambdaUpdate.eq(User::getUserName,"李四").set(User::getCity,"长沙");
+        int rows = userDao.update(null,lambdaUpdate);
+        System.out.println("影响记录数="+rows);
     }
 
 }

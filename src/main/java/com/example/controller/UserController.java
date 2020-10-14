@@ -165,4 +165,47 @@ public class UserController {
         userBO.deleteUserById(id);
     }
 
+    @PostMapping("deleteByMap.do")
+    @ApiOperation("deleteByMap删除用户数据")
+    public void deleteByMap() throws Exception{
+        userBO.deleteByMap();
+    }
+
+    @PostMapping("deleteBatchIds.do")
+    @ApiOperation("deleteBatchIds删除用户数据")
+    public void deleteBatchIds() throws Exception{
+        userBO.deleteBatchIds();
+    }
+
+    @PostMapping("deleteByWrapper.do")
+    @ApiOperation("deleteByWrapper删除用户数据")
+    public void deleteByWrapper() throws Exception{
+        userBO.deleteByWrapper();
+    }
+
+    @PostMapping("updateById.do")
+    @ApiOperation("updateById修改数据")
+    public void updateById() throws Exception{
+        userBO.updateById();
+    }
+
+    @PostMapping("updateByWrapper1.do")
+    @ApiOperation("updateByWrapper1修改数据")
+    public void updateByWrapper1() throws Exception{
+        userBO.updateByWrapper1();
+    }
+
+    @PostMapping("updateByWrapper2.do")
+    @ApiOperation("updateByWrapper2修改数据")
+    public void updateByWrapper2() throws Exception{
+        userBO.updateByWrapper2();
+    }
+
+    @PostMapping("updateByWrapperLambda.do")
+    @ApiOperation("updateByWrapperLambda修改数据")
+    public void updateByWrapperLambda() throws Exception{
+        userBO.updateByWrapperLambda();
+    }
+
+
 }
