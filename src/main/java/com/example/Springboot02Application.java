@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //        (exclude= {DataSourceAutoConfiguration.class})
 @EnableAspectJAutoProxy
 @EnableScheduling  //开启定时任务
-@MapperScan(basePackages = {"com.example.mapper"})
+@MapperScan(basePackages = {"com.example.mapper.**"})
 public class Springboot02Application {
 
     public static void main(String[] args) {

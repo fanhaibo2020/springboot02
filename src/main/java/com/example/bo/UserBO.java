@@ -1,17 +1,23 @@
 package com.example.bo;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.User;
+import com.example.entity.vo.UserStatusVO;
 import com.example.mapper.UserMapper;
+import com.example.mapper.UserMapperExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 
 import java.util.*;
 
@@ -22,10 +28,13 @@ import java.util.*;
  * @Version 1.0
  **/
 @Service
-public class UserBO {
+//批量操作要求的extends ServiceImpl<> implements UserMapperExt
+public class UserBO extends ServiceImpl<UserMapper,User> implements UserMapperExt{
 
     @Autowired
     private UserMapper userDao;
+    @Autowired
+    public UserMapperExt userMapperExt;
 
     //查询所有用户信息
     public List<User> findAllUser() throws Exception{
@@ -266,6 +275,23 @@ public class UserBO {
       return row;
     }
 
+    /** 批量添加用户数据**/
+    @Transactional
+    public void batchInsert() throws Exception{
+        //方式二:批量添加
+        List<User> users = new ArrayList<>();
+        for(int i=10;i<50;i++){
+            User user = new User();
+            user.setUserId(String.valueOf(i));
+            user.setUserName("测试"+String.valueOf(i));
+            user.setGender("男");
+            user.setAge(String.valueOf(i));
+            users.add(user);
+        }
+        saveBatch(users,15); //每次批量插入的条数，不设置默认为1000
+//        userMapperExt.saveBatch(users); //这里不用userMapperExt的对象是因为UserBO继承了IService,直接调用经可以了
+    }
+
     /**
      * 根据id删除用户数据
      * SQL:
@@ -362,5 +388,44 @@ public class UserBO {
         int rows = userDao.update(null,lambdaUpdate);
         System.out.println("影响记录数="+rows);
     }
+
+    /**用Select注解形式进行查询**/
+    public List<User> queryBySelectAnno1() throws Exception{
+        String userId = "3";
+        return userDao.queryBySelectAnno1(userId);
+    }
+
+    /**多表连接查询(不带查询条件)**/
+    public List<UserStatusVO> jointQueryBySelectAnno2() throws Exception{
+        return userDao.jointQueryBySelectAnno2();
+    }
+
+    /**Select注解多表带条件连接分页查询**/
+    public List<UserStatusVO> jointConditionQueryBySelectAnno3() throws Exception{
+        QueryWrapper<JSONObject> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("a.userId,a.userName,a.age,b.statusName,c.cityName");
+        String statusName = "老师";
+        queryWrapper.eq("b.statusName",statusName); //与mapper文件中的sql条件对应,故只能采用硬编码
+        //判断是否加入sql语句的条件中去
+        String id = null;
+        String age = "48";
+        if(!StringUtils.isEmpty(id)){
+            queryWrapper.eq("a.userId",id);
+        }
+        if(!StringUtils.isEmpty(age)){
+            queryWrapper.or().eq("a.age",age);
+        }
+        return userDao.jointConditionQueryBySelectAnno3(queryWrapper);
+    }
+
+    /**Select注解多表带条件连接、分页查询**/
+    public IPage<UserStatusVO> jointConditionPageQueryBySelectAnno4(Page paging) throws Exception{
+        QueryWrapper<UserStatusVO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("a.userId,a.userName,a.age,b.statusName,c.cityName");;
+        queryWrapper.eq("a.age","48");
+//        queryWrapper.lambda().eq(UserStatusVO::getAge,age);  //条件不能用这种lambda()形式的
+        return userDao.jointConditionPageQueryBySelectAnno4(paging,queryWrapper);
+    }
+
 
 }

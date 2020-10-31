@@ -1,8 +1,10 @@
 package com.example.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.bo.UserBO;
 import com.example.entity.User;
+import com.example.entity.vo.UserStatusVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -159,6 +161,12 @@ public class UserController {
         userBO.insertUser(user);
     }
 
+    @PostMapping("batchInsert.do")
+    @ApiOperation("批量insert用户数据")
+    public void batchInsert() throws Exception{
+        userBO.batchInsert();
+    }
+
     @PostMapping("deleteUserById.do")
     @ApiOperation("根据id删除(delete)用户数据")
     public void deleteUserById(String id) throws Exception{
@@ -207,5 +215,28 @@ public class UserController {
         userBO.updateByWrapperLambda();
     }
 
+    @GetMapping("queryBySelectAnno1.do")
+    @ApiOperation("Select注解查询1")
+    public List<User> queryBySelectAnno1() throws Exception{
+        return userBO.queryBySelectAnno1();
+    }
+
+    @GetMapping("jointQueryBySelectAnno2.do")
+    @ApiOperation("Select注解多表连接查询")
+    public List<UserStatusVO> jointQueryBySelectAnno2() throws Exception{
+        return userBO.jointQueryBySelectAnno2();
+    }
+
+    @GetMapping("jointConditionQueryBySelectAnno3.do")
+    @ApiOperation("Select注解多表带条件连接查询")
+    public List<UserStatusVO> jointConditionQueryBySelectAnno3() throws Exception{
+        return userBO.jointConditionQueryBySelectAnno3();
+    }
+
+    @GetMapping("jointConditionQueryBySelectAnno4.do")
+    @ApiOperation("Select注解多表带条件连接、分页查询")
+    public IPage<UserStatusVO> jointConditionPageQueryBySelectAnno4(Page paging) throws Exception{
+        return userBO.jointConditionPageQueryBySelectAnno4(paging);
+    }
 
 }
