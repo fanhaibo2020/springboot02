@@ -2,6 +2,7 @@ package com.example.calendar;
 
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +19,8 @@ public class calendarTest {
 
     public static void main(String[] args) throws Exception{
         getDates("2020-10-1", "2020-12-31");
+        //四舍五入的计算
+        calculate();
     }
 
     /**
@@ -45,9 +48,24 @@ public class calendarTest {
             cd.add(Calendar.DATE, 1);//增加一天 放入集合
             date=cd.getTime();
             System.out.println("666="+sdf.format(date)); //2020-10-02
-
         }
+    }
+
+    //四舍五入计算
+    public static void calculate() throws Exception{
+        BigDecimal standard = new BigDecimal(1000);
+        BigDecimal num1 = new BigDecimal(333);
+        BigDecimal num2 = new BigDecimal(333);
+        BigDecimal num3 = new BigDecimal(334);
+        BigDecimal a = num1.divide(standard, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal b = num2.divide(standard, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal c = num3.divide(standard, 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("a="+a); //打印数据：
+        System.out.println("b="+b);
+        System.out.println("c="+c);
+
 
     }
+
 
 }

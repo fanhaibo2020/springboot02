@@ -13,6 +13,8 @@
  <a href="##">导航页三</a>
  <a href="##">创建一个分支</a>
  <a href="##" id="aop">AOP</a>
+ <button href="##" id="excel">导出excel</button>
+ <a href="http://localhost:9000/swagger-ui.html">跳转至swagger页面</a>
  <div>
      <a href="##" id="logout">退出登录</a>
  </div>
@@ -25,4 +27,13 @@
         var layer = layui.layer;  //layer初始化
     })
 </script>
+
+<script>
+    layui.config({
+        base: 'layui_exts/',
+    }).extend({
+        excel: 'excel',
+    });
+</script>
+
 </html>

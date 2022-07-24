@@ -6,11 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 //        (exclude= {DataSourceAutoConfiguration.class})
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(exposeProxy = true)
+@EnableAsync
 @EnableScheduling  //开启定时任务
 @MapperScan(basePackages = {"com.example.mapper.**"})
 public class Springboot02Application {

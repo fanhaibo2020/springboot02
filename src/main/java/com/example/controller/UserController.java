@@ -1,19 +1,36 @@
 package com.example.controller;
 
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.bo.UserBO;
 import com.example.entity.User;
 import com.example.entity.vo.UserStatusVO;
+import com.example.utils.JWTUtils;
+import com.example.utils.PDFTemplateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +40,7 @@ import java.util.Map;
  * @Date 2020/9/16 18:34
  * @Version 1.0
  **/
+@Slf4j
 @RestController
 @RequestMapping("/user")
 @Api(value="用户Controller",tags = "用户信息相关接口控制类")
@@ -239,4 +257,94 @@ public class UserController {
         return userBO.jointConditionPageQueryBySelectAnno4(paging);
     }
 
+    @GetMapping("/token/login.do")
+    public Map<String,Object> login(String userName,String pwd) throws Exception{
+        Map<String,Object> map = new HashMap<>();
+        try{
+            User user = userBO.login(userName,pwd);
+            //生成token令牌
+            Map<String,String> payload = new HashMap<>();
+            payload.put("name",user.getUserName());
+            payload.put("age",user.getAge());
+            String token = JWTUtils.getToken(payload);
+            map.put("state",true);
+            map.put("msg","认证成功");
+            map.put("token",token); //响应token,因为要存储在客户端,每次发请求都要携带它
+        }catch(Exception e){
+            map.put("state",false);
+            map.put("msg",e.getMessage());
+        }
+        return map;
+    }
+
+    //
+    @PostMapping("testToken.do")
+    public Map<String,Object> testToken(String token) throws Exception{
+        log.info("当前token为：{}",token);
+        Map<String,Object> map = new HashMap<>();
+        try{
+            DecodedJWT verify = JWTUtils.getTokenInfo(token);
+            map.put("state",true);
+            map.put("msg","请求成功！");
+            return map;
+        }catch (SignatureVerificationException e){
+            e.printStackTrace();
+            map.put("msg","无效签名！");
+        }catch (TokenExpiredException e){
+            e.printStackTrace();
+            map.put("msg","token过期！");
+        }catch(AlgorithmMismatchException e){
+            e.printStackTrace();
+            map.put("msg","token算法不一致！");
+        }catch (Exception e){
+            e.printStackTrace();
+            map.put("msg","token无效！");
+        }
+        map.put("state",false);
+        return map;
+    }
+
+    @PostMapping("downloadPDF.do")
+    @ApiOperation("下载pdf文件")
+    public ResponseEntity<byte[]> exportPdf(HttpServletResponse response) throws Exception{
+        ByteArrayOutputStream baos = null;
+        OutputStream out = null;
+        try {
+            // 模板中的数据，实际运用从数据库中查询
+            Map<String,Object> data = new HashMap<>();
+            List<Map<String,Object>> detailList = new ArrayList<>();
+            for(int i=0;i<100;i++){
+                Map<String,Object> map = new HashMap<>();
+                map.put("userName","张三"+(i+1));
+                map.put("gender","男");
+                map.put("idCardNo","88888888888888888"+(i+1));
+                map.put("address","湖南省长沙市开福区四方坪街道三一大道第" + i + "号的xx栋xxx楼层xxx室");
+                detailList.add(map);
+            }
+            data.put("detailList", detailList);
+            baos = PDFTemplateUtil.createPDF(data, "pdf测试模板.ftl");
+//            // 设置响应消息头，告诉浏览器当前响应是一个下载文件
+//            response.setContentType( "application/x-msdownload");
+//            // 告诉浏览器，当前响应数据要求用户干预保存到文件中，以及文件名是什么 如果文件名有中文，必须URL编码
+//            String fileName = URLEncoder.encode("住房公示报告.pdf", "UTF-8");
+//            response.setHeader( "Content-Disposition", "attachment;filename=" + fileName);
+//            out = response.getOutputStream();
+//            baos.writeTo(out);
+//            baos.close();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment",URLEncoder.encode("公寓住房公示.pdf","UTF-8"));
+            return new ResponseEntity<byte[]>(baos.toByteArray(),headers,HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("导出失败：" + e.getMessage());
+        } finally{
+            if(baos != null){
+                baos.close();
+            }
+            if(out != null){
+                out.close();
+            }
+        }
+    }
 }

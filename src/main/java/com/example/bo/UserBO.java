@@ -48,6 +48,18 @@ public class UserBO extends ServiceImpl<UserMapper,User> implements UserMapperEx
      * @throws Exception
      */
     public User findUserById(String id) throws Exception{
+        //
+        System.out.println("传入的id值"+id);
+        QueryWrapper<User> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(User::getUserId,id);
+        List<User> users = userDao.selectList(queryWrapper);
+        System.out.println("users="+users);
+        System.out.println("users.size()="+users.size());
+        if(users !=null){
+            System.out.println("结果不为空");
+        }
+        //
+
        return userDao.selectById(id);  //selectById是baseMapper中已定义好的方法
     }
 
@@ -289,6 +301,7 @@ public class UserBO extends ServiceImpl<UserMapper,User> implements UserMapperEx
             users.add(user);
         }
         saveBatch(users,15); //每次批量插入的条数，不设置默认为1000
+//        saveOrUpdateBatch()
 //        userMapperExt.saveBatch(users); //这里不用userMapperExt的对象是因为UserBO继承了IService,直接调用经可以了
     }
 
@@ -427,5 +440,15 @@ public class UserBO extends ServiceImpl<UserMapper,User> implements UserMapperEx
         return userDao.jointConditionPageQueryBySelectAnno4(paging,queryWrapper);
     }
 
+     //token 模拟用户登录,验证token代码测试
+    public User login(String userName,String pwd) throws Exception{
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(User::getUserName,userName).eq(User::getUserId,pwd);
+        User user = userDao.selectOne(queryWrapper);
+        if(user!=null){
+            return user;
+        }
+        throw new Exception("认证失败！");
+    }
 
 }
