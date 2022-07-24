@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.entity.User;
 import com.example.entity.vo.UserStatusVO;
 import org.apache.ibatis.annotations.Param;
@@ -30,7 +31,7 @@ public interface UserMapper extends BaseMapper<User> {
     //查询的结果*的全体对象的结果集为UserStatusVO
     List<UserStatusVO> jointQueryBySelectAnno2();
 
-
+    //自定义SQL,ew对应的就是Constants.WRAPPER，ew.SqlSelect：所需要查找的字段,ew.SqlSelect：所需要查找的字段
     @Select("SELECT ${ew.sqlSelect} FROM USER a LEFT JOIN userstatus b ON a.userId = b.userId\n"+
        "\tLEFT JOIN city c ON b.cityUuid = c.cityUuid ${ew.customSqlSegment}")
     List<UserStatusVO> jointConditionQueryBySelectAnno3(@Param(Constants.WRAPPER) QueryWrapper wrapper);

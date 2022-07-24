@@ -32,7 +32,10 @@ public class User extends Model<User> {
     @TableField("age")
     private String age;
 
-    @TableField(value="city")
+    @TableField("password")
+    private String password;
+
+    @TableField(exist = false)
     private String city;
 
     @TableField(exist = false)  //表明不是数据库中的字段
